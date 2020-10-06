@@ -1,24 +1,25 @@
 import API from "../../utils/api"
 
 export const login = (email, pass) => {
-    return (dispatch) => {
-        
+    return (dispatch) => {       
         API.login(email, pass, res => {
-            console.log("Result", res.data);
             dispatch({
                 type: 'LOGIN',
                 payload: {
-                    email: email,
-                    token: res.data.id,
-                    userId: res.data.userId
+                    token: res.data.token,
+                    user: res.data.user
                 }
             })
-            API.getUser(res.data.userId, res.data.id, res2 => {
+            API.getUserProfile(res.data.user._id, res2 => {
+                
                 dispatch({
                     type: 'AFTER_LOGIN',
-                    payload: res2.data
+                    payload: {
+                        profile: res2.data
+                    }
                 })
             })
+            
         })
     }
 
@@ -46,4 +47,15 @@ export const register = (name, email, pass) => {
     }
     /* type: 'REGISTER',
         payload: {email, pass}*/
+}
+
+export const changePassword = (pass, id, changePass,token) => {
+    return dispatch => {
+        API.changePassword(pass, id, changePass, token,  res => {
+            dispatch({
+                type: 'PASSWORD_CHANGED',
+                payload: res.data
+            })
+        })
+    }
 }

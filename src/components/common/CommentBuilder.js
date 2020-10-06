@@ -17,12 +17,12 @@ class CommentBuilder extends Component{
                 <form onSubmit={e => {
                     e.preventDefault();
                     const comment = {
-                        postId: this.props.site.post.id,
-                        profileId: this.props.auth.profile.id,
-                        userId: this.props.auth.user.id,
-                        content: this.props.values.content
+                        content: this.props.values.content,
+                        postId: this.props.site.post._id,
+                        profileId: this.props.auth.profile._id,
+                        userId: this.props.auth.user.user._id                       
                     }
-                    this.props.postComment(comment, this.props.auth.token);              
+                    this.props.postComment(comment, this.props.auth.user.token);              
                 }}>
                         <Field
                             {...fields[0]}
@@ -56,12 +56,10 @@ export default connect(
     mapDispatchToProps
 )(withFormik({
     mapPropsToValues: () => ({
-        email: '',
-        password: ''
+        content: ''
     }),
     validationSchema: Yup.object().shape({
-        email: Yup.string().email('Email is invalid').required('You need to login with email address'),
-        password: Yup.string().required('You need to enter your password')
+        content: Yup.string().required('Add comment')
     }),
     
 })(CommentBuilder));

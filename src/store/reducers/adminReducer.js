@@ -2,7 +2,8 @@ const defaultState = {
     users: [],
     user: {},
     posts: [],
-    post: {}
+    post: {},
+    profile: {},
 }
 
 const admin = (state = defaultState, action) => {
@@ -15,6 +16,7 @@ const admin = (state = defaultState, action) => {
         case 'USER_ADDED':
             return {
                 ...state,
+                users: state.posts.concat(action.payload),
                 user: action.payload
             }
         case 'UPDATED_USER':
@@ -23,14 +25,27 @@ const admin = (state = defaultState, action) => {
                 user: {
                     ...state.user,
                     ...action.payload,
-                }
+                },
+                users: state.users.map(u => {
+                    if (u.id === action.payload._id){
+                        //This is the existing post in redux that has been
+                        // updated and currently in action.payload
+                        return {
+                            ...u,
+                            ...action.payload
+                        } 
+                    } else {
+                        return u
+                    }
+                })
             }
+
         case 'UPDATED_USER_ROLE':
             return {
                 ...state,
-                user: {
-                    ...state.user,
-                    Profile: action.payload
+                profile: {
+                    ...state.profile,
+                    ...action.payload
                 }
             }
         case 'DELETED_USER': 
@@ -40,20 +55,13 @@ const admin = (state = defaultState, action) => {
                     ...state.user,
                     ...action.payload
                 }
-            }
-        case 'DELETED_USER_ROLE': 
-            return {
-                ...state,
-                user: {
-                    ...state.user,
-                    ...action.payload
-                }
-            }   
+            } 
         case 'GOT_SINGLE_USER':
             return {
                 ...state,
-                user: action.payload,              
+                ...action.payload             
             }
+        
         case 'GOT_POSTS':
             return {
                 ...state,
@@ -74,7 +82,7 @@ const admin = (state = defaultState, action) => {
                     ...action.payload,
                 },
                 posts: state.posts.map(p => {
-                    if (p.id === action.payload.id){
+                    if (p._id === action.payload._id){
                         //This is the existing post in redux that has been
                         // updated and currently in action.payload
                         return {
@@ -89,7 +97,10 @@ const admin = (state = defaultState, action) => {
         case 'GOT_SINGLE_POST':
             return {
                 ...state,
-                post: action.payload,              
+                post: {
+                    ...state.post,
+                    ...action.payload
+                }           
             }           
             case 'DELETED_POST': 
             return {
@@ -104,7 +115,7 @@ const admin = (state = defaultState, action) => {
                 ...state,
                 post: {
                     ...state.post,
-                    PostImage: [action.payload]
+                    postImage: [action.payload]
                 }
             }  
         case 'UPLOADED_IMAGE':
@@ -112,10 +123,9 @@ const admin = (state = defaultState, action) => {
                 ...state,
                 post: {
                     ...state.post,
-                    PostImage: [action.payload]
+                    postImage: [action.payload]
                 }
-            }
-        
+            }       
         default: 
         return state
     }

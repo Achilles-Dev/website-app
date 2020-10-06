@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {withRouter, Link as RouterLink} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import Header from '../common/Header';
 import image from '../assets/img/about.jpg'
 import * as SiteActions from '../../store/actions/siteActions';
@@ -25,7 +25,7 @@ class Blog extends Component{
                 <section className="page-section bg-light" id="portfolio">
                     <div className="container">
                         
-                        <div className="row">
+                         <div className="row">
                             {this.props.site.posts ? 
                                 this.props.site.posts.length > 0 ?
                                     this.props.site.posts.map((post, i) => {
@@ -38,7 +38,7 @@ class Blog extends Component{
                                     })
                                 :null
                             :null}
-                        </div>
+                        </div> 
                         <div className="row">
                             <div className="col-md-12">
                                 <div className="text-center">

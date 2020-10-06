@@ -1,7 +1,7 @@
 const defaultState = {
     posts: [],
     postCount: 0,
-    post: {}
+    post: {},
    
 }
 
@@ -17,27 +17,29 @@ const site = (state = defaultState, action) => {
                 ...state,
                 postCount: action.payload
             }
-        case 'SET_DEFAULT_POST_DATA':
-            return {
-                ...state,
-                post: action.payload
-            }
+        
         case 'SET_FULL_POST_DATA':
             return {
                 ...state,
-                post: {
-                    ...state.post,
-                    ...action.payload
-                }
+                post: action.payload
             }
         case 'ADDED_COMMENT':
             return {
                 ...state,
                 post: {
                     ...state.post,
-                    Comments: state.post.Comments.concat(action.payload),
+                    comments: state.post.comments.concat(action.payload)
                 }              
             }
+        case 'GOT_COMMENTS': 
+            return {
+                ...state,
+                post: {
+                    ...state.post,
+                    comments: action.payload
+                }
+            }
+        
         default: 
         return state
     }

@@ -11,74 +11,100 @@ const API = {
         axios.post(`${host}/api/users/login`, {email: email, password: pass})
         .then(res => {
             success(res);
-        });
+        })
+        .catch(() => {
+            console.log("Can't access " + host);
+        })
     },
-    getUser: (userId, token, success) => {
-        axios.get(`${host}/api/users/${userId}?access_token=${token}`,{
-            params: {
-                filter: {
-                    include: 'Profile',
-                }
-            }
-        }).then(res => {
+    
+    getUserProfile: (userId, success) => {
+        axios.get(`${host}/api/users/${userId}/profile`)
+        .then(res => {
             success(res);
+        })
+        .catch(err => {
+            success(err.message);
         });
     },
     register: (name, email, pass, success) => {
-        axios.post(`${host}/api/users`, {name: name, email: email, password: pass})
+        axios.post(`${host}/api/users`, {username: name, email: email, password: pass})
         .then(res => {
             success(res);
         })
         .catch(err => {
-            success(err);
+            success(err.message);
         })
     },
     addUsers: (user, token, success) => {
-        axios.post(`${host}/api/users?access_token=${token}`, user)
+        axios.post(`${host}/api/users`, user, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
         .catch(err => {
-            success(err);
+            success(err.message);
         })
     },
     updateUser: (user, token, success) => {
-        axios.patch(`${host}/api/users/${user.id}?access_token=${token}`, user)
+        axios.patch(`${host}/api/users/${user._id}`, user, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
     deleteUser: (user, token, success) => {
-        axios.delete(`${host}/api/users/${user.id}?access_token=${token}`, user)
+        axios.delete(`${host}/api/users/${user._id}`, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
+    
     updateUserRole: (role, id, token, success) => {
-        axios.patch(`${host}/api/Profiles/${id}?access_token=${token}`, {role: role})
+        axios.patch(`${host}/api/profiles/${id}`, {role: role}, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
-    deleteUserRole: (role, id, token, success) => {
-        axios.delete(`${host}/api/Profiles/${id}?access_token=${token}`, {role: role})
+    
+    changePassword: (pass, id, changePass, token,  success) => {
+        axios.patch(`${host}/api/users/${id}`, {password: pass, changePassword: changePass}, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
 
     getUsers: (token, success) => {
-        axios.get(`${host}/api/users?access_token=${token}`)
+        axios.get(`${host}/api/users`, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
         success(res);
         })
     },
     getSingleUser: (id, token, success) => {               
-        axios.get(`${host}/api/users/${id}?access_token=${token}`, {
-            params: {
-                filter: {
-                    include: 'Profile'
-                }
+        axios.get(`${host}/api/users/${id}`, {
+            headers: {
+                'access_token': token
             }
         })
         .then(res => {
@@ -87,109 +113,111 @@ const API = {
     },
 
     getPosts: (token, success) => {
-        axios.get(`${host}/api/Posts?access_token=${token}`)
+        axios.get(`${host}/api/posts`, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
     getSitePosts: (skip, success) => {
-        axios.get(`${host}/api/Posts`, {
-            params: {
-                filter: {
-                    skip: skip,
-                    limit: 5,
-                    include: 'PostImage',
-                    fields: {
-                        id: true,
-                        title: true,
-                        slug: true
-                    }
-                }
-            }
-        })
+        axios.get(`${host}/api/sitePosts?skip=${skip}`)
         .then(res => {
             success(res);
         })
     },
     getPostCount: (success) => {
-        axios.get(`${host}/api/Posts/count`)
+        axios.get(`${host}/api/posts/count`)
         .then(res => {
             success(res);
         })
     },
 
-    addPosts: (post, token, success) => {   
-        axios.post(`${host}/api/Posts?access_token=${token}`, post)
+    addPosts: (posts, userId, token, success) => {   
+        axios.post(`${host}/api/posts`, {userId: userId, title: posts.title, 
+            slug: posts.slug, content: posts.content, status: posts.status}, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
     updatePost: (post, token, success) => {
-        axios.patch(`${host}/api/Posts/${post.id}?access_token=${token}`, post)
+        axios.patch(`${host}/api/posts/${post._id}`, post, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     }, 
     deletePost: (post, token, success) => {
-        axios.delete(`${host}/api/Posts/${post.id}?access_token=${token}`, post)
+        axios.delete(`${host}/api/posts/${post._id}`, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
     deletePostImage: (postImage, pId, token, success) => {
-        axios.delete(`${host}/api/PostImages/${pId}?access_token=${token}`, postImage)
+        axios.delete(`${host}/api/postImages/${pId}`, postImage, {
+            headers: {
+                'access_token': token
+            }
+        })
         .then(res => {
             success(res);
         })
     },
     getSinglePost: (id, token, success) => {               
-        axios.get(`${host}/api/Posts/${id}?access_token=${token}`, {
-            params: {
-                filter: {
-                    include: 'PostImage'
-                }
+        axios.get(`${host}/api/posts/${id}`, {
+            headers: {
+                'access_token': token
             }
         })
         .then(res => {
             success(res);
         })
     },
-    uploadImage: (data, token, postId, userId, success) => {               
-        axios.post(`${host}/api/PostImages/upload?post_id=${postId}&access_token=${token}&user_id=${userId}`, data)
+    uploadImage: (data, postId, success) => {               
+        axios.post(`${host}/api/postImages/upload/${postId}`, data, {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        })
         .then(res => {
             success(res);
         })
     },
-    getPostBySlug: (slug, token, success) => {
-        axios.get(`${host}/api/Posts/findOne?access_token=${token}`, {
-            params: {
-                filter: {
-                    where: {slug: slug},
-                    include: ['PostImage',{Comments: 'Profile'}],
-                    
-                }
-            }
-        }).then(res => {
+    getPostBySlug: (slug, success) => {
+        axios.get(`${host}/api/sitePosts/${slug}`)
+        .then(res => {
             success(res);
         })
     },
-    getCommentById: (commentId, token, success) => {
-        axios.get(`${host}/api/Comments/${commentId}?access_token=${token}`, {
-            params: {
-                filter: {
-                    include: 'Profile',
-                }
-            }
-        }).then(res => {
+    getCommentById: (commentId, success) => {
+        axios.get(`${host}/api/comments/${commentId}`)
+        .then(res => {
+            success(res);
+        })
+    },
+    getComments: (success) => {
+        axios.get(`${host}/api/comments`)
+        .then(res => {
             success(res);
         })
     },
     postComment: (comment, token, success) => {
-        axios.post(`${host}/api/Comments?access_token=${token}`, comment, {
-            params: {
-                filter: {
-                    include: 'Profile',
-                }
+        axios.post(`${host}/api/comments`, comment, {
+            headers: {
+                'access_token': token
             }
         }).then(res => {
             success(res);

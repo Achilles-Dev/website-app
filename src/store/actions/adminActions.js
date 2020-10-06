@@ -44,25 +44,15 @@ export const updateUserRole = (role, id, token) => {
         })
     }
 }
-export const deleteUserRole = (role, id, token) => {
-    return dispatch => {
-        API.deleteUserRole(role, id, token, res => {
-            dispatch({
-                type: 'DELETED_USER_ROLE',
-                payload: res.data
-            })
-        })
-    }
-}
 
 
 export const getSingleUser = (id, token) => {
     return dispatch => {
-        API.getSingleUser(id, token, res => {
+        API.getSingleUser(id, token, res => {        
             dispatch({
                 type: 'GOT_SINGLE_USER',
                 payload: res.data
-            })
+            })         
         })
     }
 }
@@ -90,9 +80,9 @@ export const getPosts = (token) => {
     
 }
 
-export const addPosts = (posts, token) => {
+export const addPosts = (posts, userId, token) => {
     return dispatch => {
-        API.addPosts(posts, token, res => {
+        API.addPosts(posts, userId, token, res => {
             dispatch({
                 type: 'POST_ADDED',
                 payload: res.data
@@ -145,9 +135,10 @@ export const deletePostImage = (postImage, pId, token) => {
     }
 }
 
-export const uploadImage = (data, token, postId, userId) => {
+export const uploadImage = (data, postId) => {
     return dispatch => {
-        API.uploadImage(data, token, postId, userId, res => {
+        API.uploadImage(data, postId, res => {
+            console.log(res.data);
             dispatch({
                 type: 'UPLOADED_IMAGE',
                 payload: res.data

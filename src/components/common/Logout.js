@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom';
+import {connect} from 'react-redux';
 import Button from '@material-ui/core/Button';
 
 class Logout extends Component{
@@ -20,11 +21,21 @@ class Logout extends Component{
 
         return  <Button 
                     className="text-white"
-                    onClick={this.logout}>Log out
-                </Button>; 
-
+                    onClick={this.logout}>                                           
+                    Log out
+                </Button>
         
     }
 }
 
-export default Logout;
+const mapStateToProps = state => ({   
+       auth: state.auth   
+});
+const mapDispatchToProps =  dispatch => ({
+
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Logout);

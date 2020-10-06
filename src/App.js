@@ -23,6 +23,7 @@ import Users from './components/pages/Admin/Users';
 import Posts from './components/pages/Admin/Posts'; 
 import AddPost from './components/pages/Admin/AddPost';
 import AddUser from './components/pages/Admin/AddUser';
+import ResetPassword from './components/pages/ResetPassword';
 
 
 
@@ -39,19 +40,17 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
+                    {this.props.auth.user.token ?
                     
                     <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                       Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
                       <AddUser/>
                     </AdminWrapper>
                     :
-                    <LoginWrapper>
-                      <Login/>
-                    </LoginWrapper>                    
+                    <Redirect to="/login" />                    
                     }                                    
                   </div>                 
               )
@@ -64,18 +63,16 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
+                    {this.props.auth.user.token ?
                     <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                       Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
                       <AddUser/>
                     </AdminWrapper>
                     :
-                    <LoginWrapper>
-                      <Login/>
-                    </LoginWrapper>                    
+                    <Redirect to="/login" />                    
                     }                                    
                   </div>                 
               )
@@ -88,18 +85,16 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
+                    {this.props.auth.user.token ?
                     <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                       Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
                       <Users/>
                     </AdminWrapper>
                     :
-                    <LoginWrapper>
-                      <Login/>
-                    </LoginWrapper>                    
+                    <Redirect to="/login" />                   
                     }                                    
                   </div>                 
               )
@@ -112,18 +107,16 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
+                    {this.props.auth.user.token ?
                     <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                       Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
                       <AddPost/>
                     </AdminWrapper>
                     :
-                    <LoginWrapper>
-                      <Login/>
-                    </LoginWrapper>                    
+                    <Redirect to="/login" />             
                     }                                    
                   </div>                 
               )
@@ -136,18 +129,16 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
+                    {this.props.auth.user.token ?
                     <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                       Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
                       <AddPost/>
                     </AdminWrapper>
                     :
-                    <LoginWrapper>
-                      <Login/>
-                    </LoginWrapper>                    
+                    <Redirect to="/login" />                  
                     }                                    
                   </div>                 
               )
@@ -160,11 +151,11 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
+                    {this.props.auth.user.token ?
                     <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                       Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
                       <Posts/>
                     </AdminWrapper>
@@ -177,6 +168,19 @@ class App extends Component {
               )
             }}
           />
+          <Route
+            exact={true}
+            path= "/login"
+            render={props => {
+              return (
+                    <div>
+                      <LoginWrapper>
+                        <Login/>
+                      </LoginWrapper> 
+                    </div>                                                                                       
+              )
+            }}
+          />
 
           <Route
             exact={true}
@@ -184,19 +188,17 @@ class App extends Component {
             render={props => {
               return (
                   <div>
-                    {this.props.auth.token ?
-                    <AdminWrapper title={
-                      !this.props.auth.user.Profile ?
+                    {this.props.auth.user.token ?
+                      <AdminWrapper title={
+                      Object.keys(this.props.auth.profile).length === 0 ?
                       ""
-                      : this.props.auth.user.Profile.role.charAt(0).toUpperCase() + this.props.auth.user.Profile.role.slice(1)
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
                     }>
-                      <Dashboard/>
-                    </AdminWrapper>
+                        <Dashboard/>
+                      </AdminWrapper>
                     :
-                    <LoginWrapper>
-                      <Login/>
-                    </LoginWrapper>                   
-                    }                                    
+                    <Redirect to="/login" /> 
+                    }                                  
                   </div>                  
               )
             }}
@@ -206,7 +208,7 @@ class App extends Component {
             exact={true}
             path="/signup"
             render={props => {
-              if (this.props.auth.token){
+              if (this.props.auth.user.token){
                 return (
                   <Redirect to="/" />
                 )
@@ -218,6 +220,29 @@ class App extends Component {
                 )
               }
             }}
+          />
+          <Route
+            exact={true}
+            path="/changePassword"
+            render={props => { 
+              return (
+                  <div>
+                    {this.props.auth.user.user.changePassword === 0 ?
+                    <AdminWrapper title={
+                       Object.keys(this.props.auth.profile).length === 0 ?
+                      ""
+                      : this.props.auth.profile.role.charAt(0).toUpperCase() + this.props.auth.profile.role.slice(1)
+                    }>
+                      <Dashboard/>
+                    </AdminWrapper>
+                    :
+                    <LoginWrapper>
+                      <ResetPassword/>
+                    </LoginWrapper>                   
+                    }                                    
+                  </div>  
+                )
+              }}
           />
           <Route
             exact= {true}

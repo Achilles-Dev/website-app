@@ -54,7 +54,7 @@ const styles = theme => ({
     },
     drawerPaperClose: {
         overflowX: 'hidden',
-        width: theme.spacing.unit * 7,
+        width: theme.spacing(7),
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
@@ -69,7 +69,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        paddding: theme.spacing.units * 3,
+        paddding: theme.spacing(3),
         height: '100vh',
         overflow: 'auto'
     }
@@ -108,7 +108,7 @@ class AdminWrapper extends Component {
                         <Grid 
                             justify="space-between"
                             container 
-                            spacing= {24}
+                            spacing= {10}
                         >
                             <Grid item>
                                 <Typography
@@ -129,7 +129,7 @@ class AdminWrapper extends Component {
                 </AppBar>
                 <Drawer
                     classes={{
-                        paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose)}} 
+                        paper: classNames(this.state.open && classes.drawerPaper, !this.state.open && classes.drawerPaperClose)}} 
                     variant="permanent"
                     open="true"
                 >   <div className={classes.toolbarIcon}>

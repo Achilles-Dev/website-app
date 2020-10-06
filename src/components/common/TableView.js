@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
@@ -41,8 +40,8 @@ class TableView extends Component{
                                         {
                                             columns.map((col, colIndex) => {
                                                 return (
-                                                    <TableCell>
-                                                        {col.name === 'id' ? 
+                                                    <TableCell >
+                                                        {col.name === '_id' ? 
                                                             <Link to={`/admin/${path}/edit/${row[col.name]}`}
                                                                 component={RouterLink}
                                                             >{row[col.name]}

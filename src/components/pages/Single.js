@@ -8,7 +8,8 @@ import CommentBuilder from '../common/CommentBuilder';
 
 class Single extends Component{
     componentDidMount(){
-        this.props.getSinglePost(this.props.match.params.slug, this.props.auth.token)
+        this.props.getSinglePost(this.props.match.params.slug);
+        this.props.getComments();
     }
     render(){
         return(
@@ -19,9 +20,9 @@ class Single extends Component{
                     subtitle={this.props.site.post.title}
                     showButton={false}
                     image={
-                        this.props.site.post.PostImage ?
-                            this.props.site.post.PostImage.length > 0 ? 
-                                API.makeFileURL(this.props.site.post.PostImage[0].url)
+                        this.props.site.post.postImage ?
+                            this.props.site.post.postImage.length > 0 ? 
+                                API.makeFileURL(this.props.site.post.postImage[0].url)
                             : ''
                         : ''}
                 />
@@ -35,7 +36,7 @@ class Single extends Component{
                     <div className="row">
                         <div className="col-md-12">
                             <h3>Comments</h3>
-                            {this.props.auth.token ? 
+                            {this.props.auth.user.token ? 
                                 <CommentBuilder />
                             : 
                                 <p>Need an account? <Link to="/signup"> Sign Up</Link></p>    
@@ -43,13 +44,17 @@ class Single extends Component{
                         </div>
                     </div>
                     <div className="row">
-                        {this.props.site.post.Comments ?
-                            this.props.site.post.Comments.length > 0 ?
-                                this.props.site.post.Comments.map((comment, i) => {
+                        {this.props.site.post.comments ?
+                            this.props.site.post.comments.length > 0 ?
+                                this.props.site.post.comments.map((comment, i) => {
                                     return (
-                                        <div className="col-md-12">
-                                            <h4>{comment.Profile ? comment.Profile.name : ''}</h4>
-                                            <p>{comment.content}</p>
+                                        <div className="col-md-12"> 
+                                            {comment.profile && comment.postId === this.props.site.post._id ? 
+                                                <div>
+                                                    <h4>{comment.profile.name}</h4>
+                                                    <p>{comment.content}</p>
+                                                </div>
+                                            : ''}
                                         </div>
                                     )
                                 })
@@ -64,13 +69,19 @@ class Single extends Component{
 
 const mapStateToProps = state => ({
     auth: state.auth,
-    site: state.site
+    site: {
+        post: state.site.post
+    }
 })
 
 const mapDispatchToProps = dispatch => ({
-    getSinglePost: (slug, token) => {
-        dispatch(SiteActions.getPostBySlug(slug, token));
+    getSinglePost: (slug) => {
+        dispatch(SiteActions.getPostBySlug(slug));
+    },
+    getComments: () => {
+        dispatch(SiteActions.getComments());
     }
+
 })
 
 export default connect(

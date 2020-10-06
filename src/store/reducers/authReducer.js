@@ -1,8 +1,8 @@
 
 const defaultState = {
     user: {},
-    token: null,
-    error: null
+    error: null,
+    profile: {}
 }
 
 const auth = (state = defaultState, action) => {
@@ -11,20 +11,24 @@ const auth = (state = defaultState, action) => {
             return {
                 ...state,
                 user: action.payload,
-                token: action.payload.token
             }
         case 'AFTER_LOGIN': 
             return {
                 ...state,
-                user: {
-                    ...state.user,
-                    ...action.payload             
-                }                  
+                 ...action.payload                             
             }
         case 'SHOW_ERROR':
             return {
                 ...state,
                 error: action.payload
+            }
+        case 'PASSWORD_CHANGED':
+            return {
+                ...state,
+                user:{
+                    ...state.user,
+                    ...action.payload,
+                }               
             }
         default:
             return state

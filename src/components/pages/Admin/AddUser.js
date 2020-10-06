@@ -13,7 +13,7 @@ import * as Yup from 'yup';
 
 const styles = theme => ({
     container: {
-        margin: theme.spacing.unit * 3,
+        margin: theme.spacing(3),
         display: 'flex',
         flexDirection: 'row wrap',
         width: '100%'
@@ -22,23 +22,23 @@ const styles = theme => ({
 
 class AddUser extends Component{
     componentDidUpdate(props, state){
-        if (this.props.match.params.view === 'add' && 
-            this.props.admin.users.filter(u => u.name === this.props.values.name).length > 0){
-                const user = this.props.admin.users.filter(u => u.name === this.props.values.name)[0];
-                this.props.history.push('/admin/users/edit' + user.dispatch);
-            }
-        
-        if (this.props.admin.user.id !== props.admin.user.id){
+               
+        if (this.props.admin.user._id !== props.admin.user._id ){
             //when redux state changes post in admin reducer
             this.props.setValues(this.props.admin.user);
-           
+            this.props.setFieldValue('role', this.props.admin.profile.role) 
+                
         } 
+        
+
+        
     }
 
     componentDidMount(props, state){
         if (this.props.match.params.view === 'edit' && this.props.match.params.id){
-            this.props.getSingleUser(this.props.match.params.id, this.props.auth.token)
+            this.props.getSingleUser(this.props.match.params.id, this.props.auth.user.token)
         }
+        
     }
     render(){
       
@@ -48,7 +48,7 @@ class AddUser extends Component{
                 
                     <Paper >
                         <FormikTextField 
-                            name="name"
+                            name="username"
                             label="Username"
                             margin="normal"
                             fullWidth
@@ -59,22 +59,28 @@ class AddUser extends Component{
                             margin="normal"
                             fullWidth
                         />
-                        {this.props.match.params.view === 'edit' ? 
+                        {this.props.match.params.view === 'add' ?
                             <FormikTextField 
-                                name="Profile.role"
-                                label="User role"
+                                name="password"
+                                label="Password"
                                 margin="normal"
                                 fullWidth
                             />
-                        :null}                       
+                        : <FormikTextField 
+                            name="role"
+                            label="User role"
+                            margin="normal"
+                            fullWidth
+                          />
+                        }                     
                         <br/>
                         <br/>
                         <div >
                             <Button                                 
                                variant="contained" 
                                color="secondary"
-                               onClick={e => {
-                                   this.props.handleSubmit() 
+                               onClick={e => {                              
+                                this.props.handleSubmit()
                                }}                           
                             ><SaveIcon />Save</Button>
                             {this.props.match.params.view === 'edit' ? 
@@ -85,8 +91,8 @@ class AddUser extends Component{
                                 onClick={e => {
 
                                     if (window.confirm('Are you sure you want to delete this user?')){
-                                        this.props.deleteUser(this.props.admin.user, this.props.auth.token);
-                                        this.props.deleteUserRole(this.props.admin.user.Profile.role, this.props.admin.user.Profile.id, this.props.auth.token);        
+                                        this.props.deleteUser(this.props.admin.user, this.props.auth.user.token);
+                                            
                                     }
                                 }}                           
                                 ><DeleteIcon />Delete</Button>
@@ -121,10 +127,8 @@ const mapDispatchToProps = dispatch => ({
     },
     deleteUser: (user, token) => {
         dispatch(AdminActions.deleteUser(user, token));
-    },
-    deleteUserRole: (role, id, token) => {
-        dispatch(AdminActions.deleteUserRole(role, id, token));
-    },
+    }
+    
 })
 
 export default withRouter(connect(
@@ -132,48 +136,41 @@ export default withRouter(connect(
     mapDispatchToProps
 )(withFormik({
     mapPropsToValues: (props) => {
-        if (props.match.params.view === 'edit' && !props.admin.user.Profile){
+        if (props.match.params.view === 'edit'){
             return {
                 email: props.admin.user.email || '', 
-                name: props.admin.user.name || '',
-                Profile: {
-                    role: '',
-                }
+                username: props.admin.user.username || '',
+                role:  props.admin.profile.role || '',
             }           
-        } else if (props.match.params.view === 'edit' && props.admin.user.Profile.role){
-            return {
-                email: props.admin.user.email || '', 
-                name: props.admin.user.name || '',
-                Profile: {
-                    role: props.admin.user.Profile.role || '',
-                }
-            }
-        }
+        } 
+        
         else {
             return {
                 email: '', 
-                name: '',               
-                Profile: {
-                    role: '',
-                }
+                username: '',               
+                password: ''
                 
             }
         }     
     },
     validationSchema: Yup.object().shape({
         email: Yup.string().email('Email is invalid').required('You email address is required'),
-        name: Yup.string().required('Your username is required'),        
+        username: Yup.string().required('Your username is required'),
+        password: Yup.string().required('Your password is required'),        
     }),
     handleSubmit: (values, {setSubmitting, props}) => {
         if (props.match.params.view === 'edit'){
             const user = {
                 ...values,
-                id: props.match.params.id
+                _id: props.match.params.id
             }
-            props.updateUser(user, props.auth.token);
-            props.updateUserRole(user.Profile.role, user.Profile.id, props.auth.token);
+            props.updateUser(user, props.auth.user.token);
+            props.updateUserRole(user.role, props.admin.profile._id, props.auth.user.token);
         } else {
-            props.addUsers(values, props.auth.token); 
+            const user = {
+                ...values
+            }
+            props.addUsers(user, props.auth.user.token); 
         }
        
     }

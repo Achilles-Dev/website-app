@@ -8,9 +8,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import {withStyles} from '@material-ui/core/styles';
 
 const columns = [
-    {label: 'ID', name: 'id'},
+    {label: 'ID', name: '_id'},
     {label: 'Email', name: 'email'},
-    {label: 'Name', name: 'name'}
+    {label: 'Name', name: 'username'}
 ]
 
 const styles = theme => ({
@@ -24,8 +24,9 @@ const styles = theme => ({
 class Users extends Component {
 
     componentDidMount(){
-        this.props.getUsers(this.props.auth.token);
+        this.props.getUsers(this.props.auth.user.token);
     }
+
     render() {
         const users = this.props.admin.users;
         const {classes} = this.props;
@@ -52,7 +53,7 @@ class Users extends Component {
 const mapStateToProps = state =>{
     return {
       auth: state.auth,
-      admin: state.admin
+      admin: {users: state.admin.users}
     }
   }
   

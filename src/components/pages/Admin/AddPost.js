@@ -18,7 +18,7 @@ import 'react-quill/dist/quill.snow.css';
 /* global $ */
 const styles = theme => ({
     container: {
-        margin: theme.spacing.unit * 3,
+        margin: theme.spacing(3),
         display: 'flex',
         flexDirection: 'row wrap',
         width: '100%'
@@ -27,18 +27,18 @@ const styles = theme => ({
         width: '100%'
     },
     formControl: {
-        margin: theme.spacing.unit
+        margin: theme.spacing(1)
     },
     leftSide: {
         flex: 4,
         height: '100%',
-        margin: theme.spacing.unit * 1,
-        padding: theme.spacing.unit * 3,
+        margin: theme.spacing(1),
+        padding: theme.spacing(3),
     },
     rightSide: {
         flex: 1,
         height: '100%',
-        margin: theme.spacing.unit * 1,
+        margin: theme.spacing(1),
         padding: theme.spacing(3),
     },
     Save: {
@@ -54,7 +54,7 @@ class AddPost extends Component{
                 this.props.history.push('/admin/posts/edit' + post.dispatch);
             }
         
-        if (this.props.admin.post.id !== props.admin.post.id){
+        if (this.props.admin.post._id !== props.admin.post._id){
             //when redux state changes post in admin reducer
             this.props.setValues(this.props.admin.post);
         } 
@@ -63,12 +63,12 @@ class AddPost extends Component{
     uploadImage = (e) => {
         const data = new FormData();
         data.append('file', e.target.files[0], new Date().getTime().toString() + e.target.files[0].name);
-        this.props.uploadImage(data, this.props.auth.token, this.props.admin.post.id, this.props.auth.user.userId)
+        this.props.uploadImage(data, this.props.admin.post._id)
     }
 
     componentDidMount(props, state){
         if (this.props.match.params.view === 'edit' && this.props.match.params.id){
-            this.props.getSinglePost(this.props.match.params.id, this.props.auth.token)
+            this.props.getSinglePost(this.props.match.params.id, this.props.auth.user.token)
         }
     }
 
@@ -136,8 +136,8 @@ class AddPost extends Component{
                             <Button 
                                 variant="contained" 
                                 color="secondary"
-                                onClick={e => {
-                                    this.props.handleSubmit() 
+                                onClick={e => {           
+                                    this.props.handleSubmit()                                
                                 }}
                             ><SaveIcon />Save</Button>
                             {this.props.match.params.view === 'edit' ? 
@@ -147,8 +147,8 @@ class AddPost extends Component{
                                 className="mt-3"
                                 onClick={e => {
                                     if (window.confirm('Are you sure you want to delete this post?')){
-                                            this.props.deletePost(this.props.admin.post, this.props.auth.token);
-                                            this.props.deletePostImage(this.props.admin.post.PostImage[0], this.props.admin.post.PostImage[0].id, this.props.auth.token);
+                                            this.props.deletePost(this.props.admin.post, this.props.auth.user.token);
+                                            //this.props.deletePostImage(this.props.admin.post.PostImage[0], this.props.admin.post.PostImage[0].id, this.props.auth.user.token);
                                     }
                                 }}
                             ><DeleteIcon />Delete</Button>
@@ -156,9 +156,9 @@ class AddPost extends Component{
                             
                         </div>
 
-                        {this.props.admin.post.PostImage && this.props.match.params.view === 'edit'? 
-                            this.props.admin.post.PostImage.length > 0 ?
-                            <img src={API.makeFileURL(this.props.admin.post.PostImage[0].url, this.props.auth.token)} className={classes.postImage} alt="img"/>
+                        {this.props.admin.post.postImage && this.props.match.params.view === 'edit'? 
+                            this.props.admin.post.postImage.length > 0 ?
+                            <img src={API.makeFileURL(this.props.admin.post.postImage[0].url, this.props.auth.user.token)} className={classes.postImage} alt="img"/>
                             : null
                         : null}
                         <div>
@@ -182,12 +182,14 @@ class AddPost extends Component{
 
 const mapStateToProps = state => ({
     auth: state.auth,
-    admin: state.admin
+    admin: {
+        post: state.admin.post
+    }
 });
 
 const mapDispatchToProps = dispatch => ({
-    addPosts: (posts, token) => {
-        dispatch(AdminActions.addPosts(posts, token));
+    addPosts: (posts, userId, token) => {
+        dispatch(AdminActions.addPosts(posts, userId, token));
     },
     updatePost: (post, token) => {
         dispatch(AdminActions.updatePost(post, token));
@@ -195,8 +197,8 @@ const mapDispatchToProps = dispatch => ({
     getSinglePost: (id, token) => {
         dispatch(AdminActions.getSinglePost(id, token));
     },
-    uploadImage: (data, token, postId, userId) => {
-        dispatch(AdminActions.uploadImage(data, token, postId, userId));
+    uploadImage: (data, postId) => {
+        dispatch(AdminActions.uploadImage(data, postId));
     },
     deletePost: (post, token) => {
         dispatch(AdminActions.deletePost(post, token));
@@ -215,36 +217,37 @@ export default withRouter(connect(
            return {
                 title: props.admin.post.title || '',
                 slug:  props.admin.post.slug || '',
-                createdAt: props.admin.post.createdAt || '',
                 status:  props.admin.post.status || false,
                 content: props.admin.post.content || '',
+                postImage: props.admin.post.postImage[0] || ''
             }            
         } else {
             return {
                 title: '',
                 slug: '',
-                createdAt: '',
                 status: false,
                 content: '',
+                postImage: ''        
             }
         }
         
     },
     validationSchema: Yup.object().shape({
         title: Yup.string().required('Title is required'),
-        slug: Yup.string().required(),
-        content: Yup.string().required(),
     }),
     handleSubmit: (values, {setSubmitting, props}) => {
         console.log("Saving");
         if (props.match.params.view === 'edit'){
             const post = {
                 ...values,
-                id: props.match.params.id
+                _id: props.match.params.id
             }
-            props.updatePost(post, props.auth.token)
+            props.updatePost(post, props.auth.user.token)
         } else {
-            props.addPosts(values, props.auth.token); 
+            const posts = {
+                ...values               
+            }
+            props.addPosts(posts, props.auth.user.user._id ,props.auth.user.token); 
         }
        
     }
